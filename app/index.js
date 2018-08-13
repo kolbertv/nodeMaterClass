@@ -60,8 +60,8 @@ let server = http.createServer(function (req, res) {
         };
 
 
-            // router the request to the handler specified in the router
-            chosenHandler(data, function (statusCode, payload) {
+        // router the request to the handler specified in the router
+        chosenHandler(data, function (statusCode, payload) {
             // use status code called back by the handler
 
             statusCode = typeof (statusCode) == 'number' ? statusCode : 200;
@@ -76,8 +76,8 @@ let server = http.createServer(function (req, res) {
 
             // return the response
 
+            res.setHeader('Content-Type', 'application/json');
             res.writeHead(statusCode);
-
             res.end(payloadString);
 
 
