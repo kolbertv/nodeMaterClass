@@ -7,6 +7,7 @@ Primary file for API
 let http = require('http');
 let url = require('url');
 let StringDecoder = require('string_decoder').StringDecoder;
+let config = require('./config');
 
 
 //The server should respond to all requests with a string
@@ -90,10 +91,10 @@ let server = http.createServer(function (req, res) {
 
 });
 
-// Start the server, and have it listen on port 3000
+// Start the server
 
-server.listen(3000, function () {
-    console.log('The server is listening on port 3000');
+server.listen(config.port, function () {
+    console.log('The server is listening on port: ', config.port + " in " + config.envName + " mode");
 
 });
 
