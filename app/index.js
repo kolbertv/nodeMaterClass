@@ -5,14 +5,54 @@ Primary file for API
 //Dependencies
 
 let http = require('http');
+let https = require('https');
 let url = require('url');
 let StringDecoder = require('string_decoder').StringDecoder;
 let config = require('./config');
+let fs = require('fs');
 
 
-//The server should respond to all requests with a string
+//instantiate the http server
 
-let server = http.createServer(function (req, res) {
+let httpServer = http.createServer(function (req, res) {
+
+    unifiedServer(req,res);
+
+});
+
+// Start the http server
+
+httpServer.listen(config.httpPort, function () {
+    console.log('The server is listening on port: ', config.httpPort + " in " + config.envName + " mode");
+
+});
+
+
+// instantiate the https server
+
+let httpsServerOptions = {
+  'key':fs.readFileSync('./app/https/key.pem'),
+  'cert': fs.readFileSync('./app/https/cert.pem')
+};
+let httpsServer = https.createServer(httpsServerOptions, function (req, res) {
+
+    unifiedServer(req,res);
+
+});
+
+
+// start https server
+
+httpsServer.listen(config.httpsPort, function () {
+    console.log('The server is listening on port: ', config.httpsPort + " in " + config.envName + " mode");
+
+});
+
+
+
+// all the server logic for both the http and https server
+
+let unifiedServer = function (req, res) {
 
     // Get url and parse it
 
@@ -84,19 +124,8 @@ let server = http.createServer(function (req, res) {
 
             console.log(statusCode, payloadString);
         });
-
-
     });
-
-
-});
-
-// Start the server
-
-server.listen(config.port, function () {
-    console.log('The server is listening on port: ', config.port + " in " + config.envName + " mode");
-
-});
+};
 
 
 // define the handlers
@@ -106,12 +135,16 @@ let handlers = {};
 
 //sample handler
 
-handlers.sample = function (data, callback) {
-    //callback a http status code, and a payload object
+// handlers.sample = function (data, callback) {
+//     //callback a http status code, and a payload object
+//
+//     callback(406, {'name': 'sample handler'});
+//
+// };
 
-    callback(406, {'name': 'sample handler'});
 
-};
+
+
 
 // define not found handler
 
@@ -121,9 +154,19 @@ handlers.notFound = function (data, callback) {
 
 };
 
+
+// ping handler
+
+handlers.ping = function (data, callback) {
+    callback(200);
+};
+
 // define a request router
 let router = {
 
-    'sample': handlers.sample
+    'ping': handlers.ping
 
 };
+
+
+
