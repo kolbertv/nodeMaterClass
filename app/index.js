@@ -11,7 +11,6 @@ let StringDecoder = require('string_decoder').StringDecoder;
 let config = require('./config');
 let fs = require('fs');
 
-
 //instantiate the http server
 
 let httpServer = http.createServer(function (req, res) {
