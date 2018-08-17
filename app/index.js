@@ -10,12 +10,14 @@ let url = require('url');
 let StringDecoder = require('string_decoder').StringDecoder;
 let config = require('./config');
 let fs = require('fs');
+let handlers = require('./lib/handlers');
+let helpers = require('./lib/helpers');
 
 //instantiate the http server
 
 let httpServer = http.createServer(function (req, res) {
 
-    unifiedServer(req,res);
+    unifiedServer(req, res);
 
 });
 
@@ -30,12 +32,12 @@ httpServer.listen(config.httpPort, function () {
 // instantiate the https server
 
 let httpsServerOptions = {
-  'key':fs.readFileSync('./app/https/key.pem'),
-  'cert': fs.readFileSync('./app/https/cert.pem')
+    'key': fs.readFileSync('./app/https/key.pem'),
+    'cert': fs.readFileSync('./app/https/cert.pem')
 };
 let httpsServer = https.createServer(httpsServerOptions, function (req, res) {
 
-    unifiedServer(req,res);
+    unifiedServer(req, res);
 
 });
 
@@ -46,7 +48,6 @@ httpsServer.listen(config.httpsPort, function () {
     console.log('The server is listening on port: ', config.httpsPort + " in " + config.envName + " mode");
 
 });
-
 
 
 // all the server logic for both the http and https server
@@ -96,7 +97,7 @@ let unifiedServer = function (req, res) {
             'queryStringObject': queryStringObject,
             'method': method,
             'headers': headers,
-            'payload': buffer
+            'payload': helpers.parseJsonToObject(buffer)
         };
 
 
@@ -127,44 +128,12 @@ let unifiedServer = function (req, res) {
 };
 
 
-// define the handlers
 
-let handlers = {};
-
-
-//sample handler
-
-// handlers.sample = function (data, callback) {
-//     //callback a http status code, and a payload object
-//
-//     callback(406, {'name': 'sample handler'});
-//
-// };
-
-
-
-
-
-// define not found handler
-
-handlers.notFound = function (data, callback) {
-
-    callback(404);
-
-};
-
-
-// ping handler
-
-handlers.ping = function (data, callback) {
-    callback(200);
-};
 
 // define a request router
 let router = {
-
-    'ping': handlers.ping
-
+    'ping': handlers.ping,
+    'users': handlers.users
 };
 
 

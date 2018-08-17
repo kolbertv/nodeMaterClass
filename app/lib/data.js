@@ -6,6 +6,7 @@
 
 let fs = require('fs');
 let path = require('path');
+let helpers = require('./helpers');
 
 
 //container for the module (to be exported)
@@ -53,7 +54,12 @@ lib.create = function (dir, file, data, callback) {
 
 lib.read = function (dir, file, callback) {
     fs.readFile(lib.baseDir + dir + '/' + file + '.json', 'utf8', function (err, data) {
-        callback(err, data);
+        if (!err && data) {
+            let parsedData = helpers.parseJsonToObject(data);
+            callback(false, parsedData);
+        } else {
+            callback(err, data);
+        }
     });
 };
 
@@ -99,10 +105,10 @@ lib.update = function (dir, file, data, callback) {
 
 // delete a file
 
-lib.delete = function(dir,file,callback){
-  //unlink the file
-    fs.unlink(lib.baseDir+dir+'/'+file+'.json',function (err) {
-        if (!err){
+lib.delete = function (dir, file, callback) {
+    //unlink the file
+    fs.unlink(lib.baseDir + dir + '/' + file + '.json', function (err) {
+        if (!err) {
             callback(false);
 
         } else {
